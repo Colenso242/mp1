@@ -135,7 +135,6 @@ public class HashLinkedList<T> implements Iterable<T> {
         ArrayList<String> hashes = new ArrayList<>();
         Iterator<T> itr = this.iterator();
 
-        //forEach(T : hashes);
         while(itr.hasNext()){
             hashes.add(HashUtil.dataToHash(itr.next()));
         }
@@ -258,7 +257,7 @@ public class HashLinkedList<T> implements Iterable<T> {
                 this.lastReturned = HashLinkedList.this.head;
                 return HashLinkedList.this.head.data;
             } else {
-                // non sono all’inizio, ma c’è ancora qualcuno
+                // non sono all’inizio, ma c’è ancora qualcosa
                 lastReturned = lastReturned.next;
                 return lastReturned.data;
             }

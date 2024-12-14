@@ -76,7 +76,7 @@ public class MerkleNode {
     public boolean isLeaf() {
         // TODO implementare
 		// Se il nodo non ha figli(ergo i nodi a sx e dx sono vuoti) è una foglia
-		return (left == null && right == null); //non so se devo mettere "this"
+		return (this.left == null && this.right == null);
     }
 
     @Override

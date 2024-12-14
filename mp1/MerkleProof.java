@@ -47,7 +47,7 @@ public class MerkleProof {
      */
     public MerkleProof(String rootHash, int length) {
         if (rootHash == null)
-            throw new IllegalArgumentException("The root hash is null");
+            throw new IllegalArgumentException("rootHash nullo");
         this.proof = new HashLinkedList<>();
         this.rootHash = rootHash;
         this.length = length;

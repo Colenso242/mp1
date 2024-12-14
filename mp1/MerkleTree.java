@@ -1,7 +1,5 @@
 package it.unicam.cs.asdl2425.mp1;
 
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.w3c.dom.Node;
 
 import java.util.*;
 
@@ -219,7 +217,7 @@ public class MerkleTree<T> {
      */
     public Set<Integer> findInvalidDataIndices(MerkleTree<T> otherTree) {
         if (otherTree == null) {
-            throw new IllegalArgumentException("Other tree cannot be null");
+            throw new IllegalArgumentException("");
         }
 
         Set<Integer> invalidIndices = new HashSet<>();
@@ -235,7 +233,7 @@ public class MerkleTree<T> {
                     invalidIndices.add(findInNode(root, node1.getHash()));
                 }
             } else if (node1.isLeaf() || node2.isLeaf()) {
-                throw new IllegalArgumentException("Trees have different structures");
+                throw new IllegalArgumentException("");
             } else if (!node1.equals(node2)) {
                 queue1.addAll(List.of(node1.getLeft(), node1.getRight()));
                 queue2.addAll(List.of(node2.getLeft(), node2.getRight()));
@@ -263,12 +261,12 @@ public class MerkleTree<T> {
      */
     public MerkleProof getMerkleProof(T data) {
         if (data == null) {
-            throw new IllegalArgumentException("Data cannot be null");
+            throw new IllegalArgumentException("");
         }
         String hash = HashUtil.dataToHash(data);
         List<MerkleNode> path = getPathToNode(this.root, hash);
         if (path == null) {
-            throw new IllegalArgumentException("Data is not part of the tree");
+            throw new IllegalArgumentException("");
         }
 
         return getMerkleProof(path);
