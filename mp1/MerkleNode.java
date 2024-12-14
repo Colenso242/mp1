@@ -3,8 +3,7 @@ package it.unicam.cs.asdl2425.mp1;
 /**
  * Rappresenta un nodo di un albero di Merkle.
  * 
- * @author Luca Tesei, Marco Caputo (template) **INSERIRE NOME, COGNOME ED EMAIL
- *         xxxx@studenti.unicam.it DELLO STUDENTE** (implementazione)
+ * @author Luca Tesei, Marco Caputo (template), Lorenzo Pane lorenzo.pane@studenti.unicam.it (implementazione)
  */
 public class MerkleNode {
     private final String hash; // Hash associato al nodo.

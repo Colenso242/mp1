@@ -14,8 +14,7 @@ import java.util.*;
  * utilizzando hash MD5.
  *
  * @param <T> il tipo di dati su cui l'albero è costruito.
- * @author Luca Tesei, Marco Caputo (template) **INSERIRE NOME, COGNOME ED EMAIL
- * xxxx@studenti.unicam.it DELLO STUDENTE** (implementazione)
+ * @author Luca Tesei, Marco Caputo (template), Lorenzo Pane, lorenzo.pane@studenti.unicam.it (implementazione)
  */
 public class MerkleTree<T> {
     /**

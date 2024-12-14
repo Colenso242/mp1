@@ -10,8 +10,7 @@ import java.util.*;
  * elemento o branch in un albero di Merkle decisi al momento di costruzione
  * della prova.
  *
- * @author Luca Tesei, Marco Caputo (template) **INSERIRE NOME, COGNOME ED EMAIL
- *         xxxx@studenti.unicam.it DELLO STUDENTE** (implementazione)
+ * @author Luca Tesei, Marco Caputo (template), Lorenzo Pane lorenzo.pane@studenti.unicam.it (implementazione)
  */
 public class MerkleProof {
 
