@@ -44,9 +44,7 @@ public class HashLinkedList<T> implements Iterable<T> {
 
     private int size; // Numero di nodi della lista
 
-    private int numeroModifiche; // Numero di modifiche effettuate sulla lista
-    // per l'implementazione dell'iteratore
-    // fail-fast
+    private int numeroModifiche; // Numero di modifiche effettuate sulla lista per l'implementazione dell'iteratore fail-fast
 
     public HashLinkedList() {
         this.head = null;
