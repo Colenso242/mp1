@@ -15,11 +15,9 @@ import java.util.*;
  * singolo hash root. In questa implementazione la verifica di dati avviene
  * utilizzando hash MD5.
  *
+ * @param <T> il tipo di dati su cui l'albero è costruito.
  * @author Luca Tesei, Marco Caputo (template) **INSERIRE NOME, COGNOME ED EMAIL
- *         xxxx@studenti.unicam.it DELLO STUDENTE** (implementazione)
- *
- * @param <T>
- *                il tipo di dati su cui l'albero è costruito.
+ * xxxx@studenti.unicam.it DELLO STUDENTE** (implementazione)
  */
 public class MerkleTree<T> {
     /**
@@ -40,40 +38,38 @@ public class MerkleTree<T> {
      * applicando direttmaente la funzione di hash MD5 al risultato della
      * concatenazione in bytes.
      *
-     * @param hashList
-     *                     un oggetto HashLinkedList contenente i dati e i
-     *                     relativi hash.
-     * @throws IllegalArgumentException
-     *                                      se la lista è null o vuota.
+     * @param hashList un oggetto HashLinkedList contenente i dati e i
+     *                 relativi hash.
+     * @throws IllegalArgumentException se la lista è null o vuota.
      */
     public MerkleTree(HashLinkedList<T> hashList) {
         // TODO implementare
-        if(hashList == null ||hashList.getSize() == 0) throw new IllegalArgumentException(); //controllo che la lista di hash non sia vuota o nulla
+        if (hashList == null || hashList.getSize() == 0)
+            throw new IllegalArgumentException(); //controllo che la lista di hash non sia vuota o nulla
         this.width = hashList.getSize();
         int leaves = closestPowOfTwo(width);
 
         List<MerkleNode> nodes = new ArrayList<>();
         List<String> hashes = hashList.getAllHashes();
 
-        for(String h : hashes)
-        {
+        for (String h : hashes) {
             nodes.add(new MerkleNode(h));                    // aggiungo nodi con hash esistenti all'albero
         }
 
-        for(int i = hashes.size(); i < leaves; i++)
-        {
+        for (int i = hashes.size(); i < leaves; i++) {
             nodes.add(new MerkleNode(""));              //aggiungo nodi "vuoti" nelle posizioni rimanenti
         }
 
-        while(nodes.size() > 1){
+        while (nodes.size() > 1) {
             List<MerkleNode> nodeList = new ArrayList<>();
             MerkleNode left = null;
-            for(MerkleNode n : nodes){
-                if(left == null) left = n;
-                else{
-                    if(n.getHash().equals("") && left.getHash().equals(""))
-                        nodeList.add(new MerkleNode("",left,n));
-                    else nodeList.add(new MerkleNode(HashUtil.computeMD5((left.getHash() + n.getHash()).getBytes()),left,n));
+            for (MerkleNode n : nodes) {
+                if (left == null) left = n;
+                else {
+                    if (n.getHash().equals("") && left.getHash().equals(""))
+                        nodeList.add(new MerkleNode("", left, n));
+                    else
+                        nodeList.add(new MerkleNode(HashUtil.computeMD5((left.getHash() + n.getHash()).getBytes()), left, n));
                     left = null;
                 }
             }
@@ -108,7 +104,7 @@ public class MerkleTree<T> {
     public int getHeight() {
         MerkleNode node = this.root;
         int height = 0;
-        while(!node.isLeaf()){
+        while (!node.isLeaf()) {
             node = node.getLeft();
             height++;
         }
@@ -126,20 +122,17 @@ public class MerkleTree<T> {
      * rappresenta. Se l'hash dell'elemento non è presente come dato
      * dell'albero, viene restituito -1.
      *
-     * @param branch
-     *                   la radice dell'albero di Merkle.
-     * @param data
-     *                   l'elemento da cercare.
+     * @param branch la radice dell'albero di Merkle.
+     * @param data   l'elemento da cercare.
      * @return l'indice del dato nell'albero; -1 se l'hash del dato non è
-     *         presente.
-     * @throws IllegalArgumentException
-     *                                      se il branch o il dato sono null o
-     *                                      se il branch non è parte
-     *                                      dell'albero.
+     * presente.
+     * @throws IllegalArgumentException se il branch o il dato sono null o
+     *                                  se il branch non è parte
+     *                                  dell'albero.
      */
     public int getIndexOfData(MerkleNode branch, T data) {
         // TODO implementare
-        if(branch == null || data == null) throw new IllegalArgumentException();
+        if (branch == null || data == null) throw new IllegalArgumentException();
         return findInNode(branch, data);
     }
 
@@ -151,15 +144,13 @@ public class MerkleTree<T> {
      * l'hash dell'elemento non è presente come dato dell'albero, viene
      * restituito -1.
      *
-     * @param data
-     *                 l'elemento da cercare.
+     * @param data l'elemento da cercare.
      * @return l'indice del dato nell'albero; -1 se il dato non è presente.
-     * @throws IllegalArgumentException
-     *                                      se il dato è null.
+     * @throws IllegalArgumentException se il dato è null.
      */
     public int getIndexOfData(T data) {
         // TODO implementare
-        return findInNode(this.root,data);
+        return findInNode(this.root, data);
     }
 
     /**
@@ -167,26 +158,12 @@ public class MerkleTree<T> {
      * all'albero di Merkle, controllando se il suo hash è parte dell'albero
      * come hash di un nodo foglia.
      *
-     * @param data
-     *                 l'elemento da validare
+     * @param data l'elemento da validare
      * @return true se l'hash dell'elemento è parte dell'albero; false
-     *         altrimenti.
+     * altrimenti.
      */
     public boolean validateData(T data) {
-        // TODO implementare
-        /*if(data == null ) throw new IllegalArgumentException("");
-        Queue<MerkleNode> q = new LinkedList<>();
-        q.add(this.root);
-
-        while(!q.isEmpty()){
-            MerkleNode n = q.poll();
-            if (n.isLeaf() && n.getHash().equals(data.hashCode())) return true;
-            if (n.getLeft() != null) q.add(n.getLeft());
-            if (n.getRight() != null) q.add(n.getRight());
-        }
-        return false;
-		*/
-        return findHashInLeaves(this.root,HashUtil.dataToHash(data));
+        return findHashInLeaves(this.root, HashUtil.dataToHash(data));
     }
 
     /**
@@ -196,8 +173,7 @@ public class MerkleTree<T> {
      * è uguale all'hash di un qualsiasi nodo intermedio di questo albero. Si
      * noti che il sottoalbero fornito può corrispondere a una foglia.
      *
-     * @param branch
-     *                   la radice del sottoalbero di Merkle da validare.
+     * @param branch la radice del sottoalbero di Merkle da validare.
      * @return true se il sottoalbero di Merkle è valido; false altrimenti.
      */
     public boolean validateBranch(MerkleNode branch) {
@@ -210,18 +186,17 @@ public class MerkleTree<T> {
      * valido rispetto a questo albero e ai suoi hash. Grazie alle proprietà
      * degli alberi di Merkle, ciò può essere fatto in tempo costante.
      *
-     * @param otherTree
-     *                      il nodo radice dell'altro albero di Merkle da
-     *                      validare.
+     * @param otherTree il nodo radice dell'altro albero di Merkle da
+     *                  validare.
      * @return true se l'altro albero di Merkle è valido; false altrimenti.
-     * @throws IllegalArgumentException
-     *                                      se l'albero fornito è null.
+     * @throws IllegalArgumentException se l'albero fornito è null.
      */
     public boolean validateTree(MerkleTree<T> otherTree) {
         // TODO implementare
-        if(otherTree == null) throw new IllegalArgumentException();
-        if(this.width != otherTree.width) return false;
-        else return findInvalidDataIndices(otherTree).isEmpty();        //banalmente, se l'albero non contiene indici invalidi,è valido
+        if (otherTree == null) throw new IllegalArgumentException();
+        if (this.width != otherTree.width) return false;
+        else
+            return findInvalidDataIndices(otherTree).isEmpty();        //banalmente, se l'albero non contiene indici invalidi,è valido
     }
 
     /**
@@ -237,12 +212,10 @@ public class MerkleTree<T> {
      * a causa di una quantità diversa di elementi con cui è stato costruito e,
      * quindi, non rappresenta gli stessi dati, viene lanciata un'eccezione.
      *
-     * @param otherTree
-     *                      l'altro Merkle Tree.
-     * @throws IllegalArgumentException
-     *                                      se l'altro albero è null o ha una
-     *                                      struttura diversa.
+     * @param otherTree l'altro Merkle Tree.
      * @return l'insieme di indici degli elementi di dati non validi.
+     * @throws IllegalArgumentException se l'altro albero è null o ha una
+     *                                  struttura diversa.
      */
     public Set<Integer> findInvalidDataIndices(MerkleTree<T> otherTree) {
         if (otherTree == null) {
@@ -250,11 +223,8 @@ public class MerkleTree<T> {
         }
 
         Set<Integer> invalidIndices = new HashSet<>();
-        Queue<MerkleNode> queue1 = new LinkedList<>();
-        Queue<MerkleNode> queue2 = new LinkedList<>();
-        queue1.add(this.root);
-        queue2.add(otherTree.getRoot());
-        int index = 0;
+        Queue<MerkleNode> queue1 = new LinkedList<>(List.of(this.root));
+        Queue<MerkleNode> queue2 = new LinkedList<>(List.of(otherTree.getRoot()));
 
         while (!queue1.isEmpty() && !queue2.isEmpty()) {
             MerkleNode node1 = queue1.poll();
@@ -264,21 +234,16 @@ public class MerkleTree<T> {
                 if (!node1.equals(node2)) {
                     invalidIndices.add(findInNode(root, node1.getHash()));
                 }
-                index++;
             } else if (node1.isLeaf() || node2.isLeaf()) {
                 throw new IllegalArgumentException("Trees have different structures");
-            } else {
-                if (!node1.equals(node2)) {
-                    queue1.add(node1.getLeft());
-                    queue1.add(node1.getRight());
-                    queue2.add(node2.getLeft());
-                    queue2.add(node2.getRight());
-                }
+            } else if (!node1.equals(node2)) {
+                queue1.addAll(List.of(node1.getLeft(), node1.getRight()));
+                queue2.addAll(List.of(node2.getLeft(), node2.getRight()));
             }
         }
-
         return invalidIndices;
     }
+
 
     /**
      * Restituisce la prova di Merkle per un dato elemento, ovvero la lista di
@@ -291,25 +256,23 @@ public class MerkleTree<T> {
      * step della prova non ci siano due hash distinti da combinare, l'hash deve
      * comunque ricalcolato sulla base dell'unico hash disponibile.
      *
-     * @param data
-     *                 l'elemento per cui generare la prova di Merkle.
+     * @param data l'elemento per cui generare la prova di Merkle.
      * @return la prova di Merkle per il dato.
-     * @throws IllegalArgumentException
-     *                                      se il dato è null o non è parte
-     *                                      dell'albero.
+     * @throws IllegalArgumentException se il dato è null o non è parte
+     *                                  dell'albero.
      */
     public MerkleProof getMerkleProof(T data) {
-    if (data == null) {
-        throw new IllegalArgumentException("Data cannot be null");
-    }
-    String hash = HashUtil.dataToHash(data);
-    List<MerkleNode> path = getPathToNode(this.root, hash);
-    if (path == null) {
-        throw new IllegalArgumentException("Data is not part of the tree");
-    }
+        if (data == null) {
+            throw new IllegalArgumentException("Data cannot be null");
+        }
+        String hash = HashUtil.dataToHash(data);
+        List<MerkleNode> path = getPathToNode(this.root, hash);
+        if (path == null) {
+            throw new IllegalArgumentException("Data is not part of the tree");
+        }
 
-    return getMerkleProof(path);
-}
+        return getMerkleProof(path);
+    }
 
     /**
      * Restituisce la prova di Merkle per un dato branch, ovvero la lista di
@@ -323,106 +286,100 @@ public class MerkleTree<T> {
      * hash distinti da combinare, l'hash deve comunque ricalcolato sulla base
      * dell'unico hash disponibile.
      *
-     * @param branch
-     *                   il branch per cui generare la prova di Merkle.
+     * @param branch il branch per cui generare la prova di Merkle.
      * @return la prova di Merkle per il branch.
-     * @throws IllegalArgumentException
-     *                                      se il branch è null o non è parte
-     *                                      dell'albero.
+     * @throws IllegalArgumentException se il branch è null o non è parte
+     *                                  dell'albero.
      */
     public MerkleProof getMerkleProof(MerkleNode branch) {
         // TODO implementare
-        if(branch == null) throw new IllegalArgumentException();
-        List<MerkleNode> path = getPathToNode(this.root,branch.getHash());
+        if (branch == null) throw new IllegalArgumentException();
+        List<MerkleNode> path = getPathToNode(this.root, branch.getHash());
         //if(path == null) throw new IllegalArgumentException();
 
         return getMerkleProof(path);
     }
 
 
-
-
     // TODO inserire eventuali metodi privati per fini di implementazione
 
-    private int closestPowOfTwo(int n){
+    private int closestPowOfTwo(int n) {
         int result = 1;
-        while(result < n) result *= 2;
+        while (result < n) {
+            result <<= 1;
+        }
         return result;
     }
 
-    private int findInNode(MerkleNode node, String hash){
-        LinkedList<MerkleNode> list = new LinkedList<>();
-        list.push(node);
-        int ind = 0;
-        while (!list.isEmpty()) {
-            MerkleNode n = list.pop();
-            if(n.isLeaf()){
-                if(n.getHash().equals(hash))
-                    return ind;
-                ind++;
+    private int findInNode(MerkleNode node, String hash) {
+        Deque<MerkleNode> stack = new LinkedList<>();
+        stack.push(node);
+        int index = 0;
+        while (!stack.isEmpty()) {
+            MerkleNode currentNode = stack.pop();
+            if (currentNode.isLeaf()) {
+                if (currentNode.getHash().equals(hash)) {
+                    return index;
+                }
+                index++;
             } else {
-                list.push(n.getRight());
-                list.push(n.getLeft());
+                stack.push(currentNode.getRight());
+                stack.push(currentNode.getLeft());
             }
         }
         return -1;
     }
-    private boolean findHashInLeaves(MerkleNode tree, String hash){
-        if(tree.isLeaf()) return tree.getHash().equals(hash);
-        return findHashInLeaves(tree.getLeft(),hash) || findHashInLeaves(tree.getRight(),hash);
+
+
+    private boolean findHashInLeaves(MerkleNode tree, String hash) {
+        if (tree.isLeaf()) return tree.getHash().equals(hash);
+        return findHashInLeaves(tree.getLeft(), hash) || findHashInLeaves(tree.getRight(), hash);
     }
 
-    private int findInNode(MerkleNode node,T data){
-        return findInNode(node,HashUtil.dataToHash(data));
+    private int findInNode(MerkleNode node, T data) {
+        return findInNode(node, HashUtil.dataToHash(data));
     }
 
     public List<MerkleNode> getPathToNode(MerkleNode current, String hash) {
-    if (current == null) {
-        return new ArrayList<>();
-    }
-    List<MerkleNode> list = new ArrayList<>();
-    list.add(current);
-
-    if (current.getHash().equals(hash)) {
-        return list;
-    }
-    if (current.isLeaf()) {
-        return null;
-    } else {
-        List<MerkleNode> left = getPathToNode(current.getLeft(), hash);
-        if (left != null) {
-            list.addAll(left);
-            return list;
+        if (current == null) {
+            return new ArrayList<>();
         }
-        List<MerkleNode> right = getPathToNode(current.getRight(), hash);
-        if (right != null) {
-            list.addAll(right);
-            return list;
+        if (current.getHash().equals(hash)) {
+            return new ArrayList<>(List.of(current));
+        }
+        if (!current.isLeaf()) {
+            List<MerkleNode> path;
+            path = this.getPathToNode(current.getLeft(), hash);
+            if (path != null) {
+                path.addFirst(current);
+                return path;
+            }
+            path = this.getPathToNode(current.getRight(), hash);
+            if (path != null) {
+                path.addFirst(current);
+                return path;
+            }
         }
         return null;
     }
 
-    }
+
     private boolean isBranchInTree(MerkleNode tree, MerkleNode branch) {
-        if (tree.equals(branch))return true;
-        if (tree.isLeaf())return false;
+        if (tree.equals(branch)) return true;
+        if (tree.isLeaf()) return false;
         return isBranchInTree(tree.getLeft(), branch) || isBranchInTree(tree.getRight(), branch);
     }
 
-    private MerkleProof getMerkleProof(List<MerkleNode> path){
-
+    private MerkleProof getMerkleProof(List<MerkleNode> path) {
         MerkleProof proof = new MerkleProof(root.getHash(), path.size() - 1);
-
-        for(int i = path.size() - 2; i >= 0; i--){
+        for (int i = path.size() - 2; i >= 0; i--) {
             MerkleNode parent = path.get(i);
-            MerkleNode son = path.get(i + 1);
-            if(parent.getLeft().getHash().equals(son.getHash())){
-                proof.addHash(parent.getRight().getHash(), false);
-            }else{
-                proof.addHash(parent.getLeft().getHash(), true);
-            }
+            MerkleNode child = path.get(i + 1);
+            boolean isLeftChild = parent.getLeft().getHash().equals(child.getHash());
+            proof.addHash(isLeftChild ? parent.getRight().getHash() : parent.getLeft().getHash(), !isLeftChild);
         }
         return proof;
     }
+
 
 }
