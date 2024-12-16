@@ -38,11 +38,11 @@ import java.util.NoSuchElementException;
  *
  */
 public class HashLinkedList<T> implements Iterable<T> {
-    private Node head; // Primo nodo della lista
+    private Node head;
 
-    private Node tail; // Ultimo nodo della lista
+    private Node tail;
 
-    private int size; // Numero di nodi della lista
+    private int size;
 
     private int numeroModifiche; // Numero di modifiche effettuate sulla lista per l'implementazione dell'iteratore fail-fast
 
@@ -66,9 +66,9 @@ public class HashLinkedList<T> implements Iterable<T> {
      * Rappresenta un nodo nella lista concatenata.
      */
     private class Node {
-        String hash; // Hash del dato
+        String hash;
 
-        T data; // Dato originale
+        T data;
 
         Node next;
 
@@ -178,7 +178,7 @@ public class HashLinkedList<T> implements Iterable<T> {
         if(data == null) throw new NullPointerException("nullPtr in remove");
         if(this.head == null) return false;         //lista nulla
 
-        if(this.head.data.equals(data)){
+        if(this.head.data.equals(data)){            //elemento da rimuovere trovato
             this.head = this.head.next;
             if(this.head == null)this.tail = null;
             size--;
@@ -212,12 +212,10 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     private class Itr implements Iterator<T> {
 
-        // TODO inserire le variabili istanza che si ritengono necessarie
         private Node lastReturned;
         private int numeroModificheAtteso;
 
         private Itr() {
-            // TODO implementare
             // Next mai usato
             this.lastReturned = null;
             this.numeroModificheAtteso = HashLinkedList.this.numeroModifiche;
@@ -225,7 +223,6 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         @Override
         public boolean hasNext() {
-            // TODO implementare
             if (this.lastReturned == null)
                 // inizio dell'iterazione
                 return HashLinkedList.this.head != null;
@@ -237,20 +234,18 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         @Override
         public T next() {
-            // TODO implementare
-            // controllo concorrenza
+            // controllo se il numero di modifiche è uguale a quello atteso
             if (this.numeroModificheAtteso != HashLinkedList.this.numeroModifiche) {
                 throw new ConcurrentModificationException(
                         "Lista modificata durante l'iterazione");
             }
-            // controllo hasNext()
             if (!this.hasNext())
                 throw new NoSuchElementException(
                         "Richiesta di next quando hasNext è falso");
             // c'è sicuramente un elemento su cui fare next
             // aggiorno lastReturned e restituisco l'elemento next
             if (this.lastReturned == null) {
-                // sono all’inizio e la lista non è vuota
+                // inizio di una lista non vuota
                 this.lastReturned = HashLinkedList.this.head;
                 return HashLinkedList.this.head.data;
             } else {
