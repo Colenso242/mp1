@@ -78,7 +78,7 @@ public class MerkleProof {
      */
     public boolean addHash(String hash, boolean isLeft) {
         // TODO implementare
-        if(this.length <= proof.getSize()) return false;
+        if(this.length <= proof.getSize()) return false;        //spazio insufficiente
         MerkleProofHash proofHash = new MerkleProofHash(hash, isLeft);
         proof.addAtTail(proofHash);
         return true;
@@ -102,7 +102,7 @@ public class MerkleProof {
 
         public MerkleProofHash(String hash, boolean isLeft) {
             if (hash == null)
-                throw new IllegalArgumentException("The hash cannot be null");
+                throw new IllegalArgumentException("hash nullo");
 
             this.hash = hash;
             this.isLeft = isLeft;
@@ -188,16 +188,16 @@ public class MerkleProof {
     public boolean proveValidityOfBranch(MerkleNode branch) {
         if (branch == null) throw new IllegalArgumentException();
         String hash = branch.getHash();
-        for (MerkleProofHash p : proof) {
+        for (MerkleProofHash p : proof) {                           //concatena gli hash contenuti nel ramo
             String combinedHash;
             if (p.isLeft) {
                 combinedHash = p.hash + hash;
             } else {
                 combinedHash = hash + p.hash;
             }
-            hash = HashUtil.computeMD5(combinedHash.getBytes());
+            hash = HashUtil.computeMD5(combinedHash.getBytes());    //calcola l'hash della stringa concatenata
         }
-        return hash.equals(this.rootHash);
+        return hash.equals(this.rootHash);                          //verifica l'integrità del ramo confrontandone l'hash con quello atteso
     }
 
     // TODO inserire eventuali metodi privati per fini di implementazione

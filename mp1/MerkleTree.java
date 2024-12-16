@@ -101,7 +101,7 @@ public class MerkleTree<T> {
     public int getHeight() {
         MerkleNode node = this.root;
         int height = 0;
-        while (!node.isLeaf()) {
+        while (!node.isLeaf()) {        //scorre l'albero fintantoché ci sono nodi, incrementando l'altezza a ogni iterazione
             node = node.getLeft();
             height++;
         }
@@ -130,7 +130,7 @@ public class MerkleTree<T> {
     public int getIndexOfData(MerkleNode branch, T data) {
         // TODO implementare
         if (branch == null || data == null) throw new IllegalArgumentException();
-        return findInNode(branch, data);
+        return findNode(branch, data);
     }
 
     /**
@@ -147,7 +147,7 @@ public class MerkleTree<T> {
      */
     public int getIndexOfData(T data) {
         // TODO implementare
-        return findInNode(this.root, data);
+        return findNode(this.root, data);
     }
 
     /**
@@ -229,7 +229,7 @@ public class MerkleTree<T> {
 
             if (node1.isLeaf() && node2.isLeaf()) {
                 if (!node1.equals(node2)) {
-                    invalidIndices.add(findInNode(root, node1.getHash()));
+                    invalidIndices.add(findNode(root, node1.getHash()));
                 }
             } else if (node1.isLeaf() || node2.isLeaf()) {
                 throw new IllegalArgumentException("");
@@ -308,23 +308,23 @@ public class MerkleTree<T> {
         return result;
     }
 
-    private int findInNode(MerkleNode node, String hash) {
+    private int findNode(MerkleNode node, String hash) {
         Deque<MerkleNode> stack = new LinkedList<>();
         stack.push(node);
         int index = 0;
-        while (!stack.isEmpty()) {
+        while (!stack.isEmpty()) {                          //itera finché trova elementi
             MerkleNode currentNode = stack.pop();
             if (currentNode.isLeaf()) {
-                if (currentNode.getHash().equals(hash)) {
+                if (currentNode.getHash().equals(hash)) {   //trovato nodo
                     return index;
                 }
                 index++;
             } else {
-                stack.push(currentNode.getRight());
+                stack.push(currentNode.getRight());         //aggiunge in testa i figli
                 stack.push(currentNode.getLeft());
             }
         }
-        return -1;
+        return -1;                  //ricerca fallita
     }
 
 
@@ -333,31 +333,33 @@ public class MerkleTree<T> {
         return findHashInLeaves(tree.getLeft(), hash) || findHashInLeaves(tree.getRight(), hash);
     }
 
-    private int findInNode(MerkleNode node, T data) {
-        return findInNode(node, HashUtil.dataToHash(data));
+    private int findNode(MerkleNode node, T data) {
+        return findNode(node, HashUtil.dataToHash(data));
     }
 
     public List<MerkleNode> getPathToNode(MerkleNode current, String hash) {
         if (current == null) {
-            return new ArrayList<>();
+            return new ArrayList<>();  // ramo vuoto corrisponde a path vuoto
         }
         if (current.getHash().equals(hash)) {
-            return new ArrayList<>(List.of(current));
+            return new ArrayList<>(List.of(current));  // il nodo target è il primo trovato
         }
+
         if (!current.isLeaf()) {
-            List<MerkleNode> path;
-            path = this.getPathToNode(current.getLeft(), hash);
-            if (path != null) {
-                path.addFirst(current);
-                return path;
+            // tenta di aggiungere prima il figlio sinistro, poi il destro
+            List<MerkleNode> path = getPathToNode(current.getLeft(), hash);
+            if (path == null) {
+                path = getPathToNode(current.getRight(), hash);
             }
-            path = this.getPathToNode(current.getRight(), hash);
+
+            // se un percorso è trovato, aggiunge il nodo corrente
             if (path != null) {
-                path.addFirst(current);
+                path.addFirst(current);  // More concise than addFirst
                 return path;
             }
         }
-        return null;
+
+        return null;  // percorso non trovato
     }
 
 
@@ -369,14 +371,19 @@ public class MerkleTree<T> {
 
     private MerkleProof getMerkleProof(List<MerkleNode> path) {
         MerkleProof proof = new MerkleProof(root.getHash(), path.size() - 1);
+
         for (int i = path.size() - 2; i >= 0; i--) {
             MerkleNode parent = path.get(i);
             MerkleNode child = path.get(i + 1);
+
+            // Verifica se il figlio è il sinistro
             boolean isLeftChild = parent.getLeft().getHash().equals(child.getHash());
+
+            // Aggiunge l'hash nodo figlio giusto
             proof.addHash(isLeftChild ? parent.getRight().getHash() : parent.getLeft().getHash(), !isLeftChild);
         }
+
         return proof;
     }
-
 
 }
